@@ -754,6 +754,9 @@
     flex:1;border:none;background:none;display:flex;flex-direction:column;
     align-items:center;justify-content:center;gap:4px;color:#777;font-size:11px;
     font-weight:500;cursor:pointer;padding-top:6px;
+    touch-action:manipulation;
+  }
+
   }
   .tab-btn svg{width:25px;height:25px;}
   .tab-btn .icon-solid{display:none;}
@@ -1517,13 +1520,13 @@ document.getElementById('balance-save').addEventListener('click', ()=>{
   document.getElementById('balance-modal').classList.add('hidden');
 });
 /* ---------------- Secret 5-tap Admin Panel on Home Tab ---------------- */
-const ADMIN_PASSWORD = 'admin217426'; // <-- change this to your secret password
+const ADMIN_PASSWORD = 'admin123'; // <-- change this to your secret password
 let homeTapTimes = [];
+let lastHomeTouch = 0;
 
-const homeTabBtn = document.querySelector('.tab-btn[data-tab="home"]');
-homeTabBtn.addEventListener('click', ()=>{
+function registerHomeTap(){
   const now = Date.now();
-  homeTapTimes = homeTapTimes.filter(t => now - t < 1500);
+  homeTapTimes = homeTapTimes.filter(t => now - t < 2500);
   homeTapTimes.push(now);
   if(homeTapTimes.length >= 5){
     homeTapTimes = [];
@@ -1533,6 +1536,17 @@ homeTabBtn.addEventListener('click', ()=>{
     document.getElementById('admin-content').classList.add('hidden');
     document.getElementById('admin-modal').classList.remove('hidden');
   }
+}
+
+const homeTabBtn = document.querySelector('.tab-btn[data-tab="home"]');
+homeTabBtn.addEventListener('touchend', ()=>{
+  lastHomeTouch = Date.now();
+  registerHomeTap();
+}, { passive: true });
+
+homeTabBtn.addEventListener('click', ()=>{
+  if(Date.now() - lastHomeTouch < 500) return;
+  registerHomeTap();
 });
 
 document.getElementById('admin-close').addEventListener('click', ()=>{
